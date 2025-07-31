@@ -27,18 +27,22 @@ USER node
 
 RUN cd nng4 && lake update -R && lake exe cache get && lake build
 # pnpm just doesn't work
-# Try to reduce the size of node modules
-RUN cd lean4game && npm i --production
+# --production seems not working
+RUN cd lean4game && npm i
 RUN cd lean4game && npm run build && npx node-prune
 
 
 
 FROM node:20-alpine
 
+USER root
+RUN npm install -g concurrently && npm cache clean
+
 USER node
 WORKDIR /home/node
 
 COPY --from=builder /home/node/lean4game /home/node/lean4game
+COPY --from=builder /home/node/nng4 /home/node/nng4
 
 EXPOSE 3000
 CMD cd ~/lean4game && npm start
