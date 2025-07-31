@@ -1,5 +1,6 @@
 FROM node:20
 
+EXPOSE 3000
 SHELL ["/bin/bash", "-euxo", "pipefail", "-c"]
 
 USER node
