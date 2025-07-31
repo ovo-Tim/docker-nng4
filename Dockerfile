@@ -27,11 +27,11 @@ USER node
 
 RUN cd nng4 && lake update -R && lake exe cache get && lake build
 # pnpm just doesn't work
-RUN cd lean4game && npm i --production
-RUN cd lean4game && npm run build
-
 # Try to reduce the size of node modules
-RUN npx node-prune
+RUN cd lean4game && npm i --production
+RUN cd lean4game && npm run build && npx node-prune
+
+
 
 FROM node:20-alpine
 
