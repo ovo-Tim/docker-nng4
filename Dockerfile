@@ -36,7 +36,7 @@ RUN cd lean4game && npm run build && npx node-prune
 FROM node:20-alpine
 
 USER root
-RUN npm install -g concurrently && npm cache clean
+RUN npm install -g concurrently && npm cache clean --force
 
 USER node
 WORKDIR /home/node
