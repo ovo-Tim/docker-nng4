@@ -29,7 +29,7 @@ RUN cd nng4 && lake update -R && lake exe cache get && lake build
 # pnpm just doesn't work
 # --production seems not working
 RUN cd lean4game && npm i
-RUN cd lean4game && npm run build && npx node-prune
+RUN cd lean4game && npm run build
 RUN npm cache clean --force
 
 EXPOSE 3000

@@ -46,13 +46,11 @@ jobs:
           labels: ${{ steps.meta.outputs.labels }}
           cache-from: type=registry,ref=${{ secrets.DOCKERHUB_USERNAME }}/nng4:latest
           cache-to: type=inline
-          outputs: type=docker,dest=/tmp/nng4.tar
 
       - name: Test Docker container and output logs
         run: |
           docker images
-          docker load -i /tmp/nng4.tar
-          docker run -d --name test-container ${{ secrets.DOCKERHUB_USERNAME }}/nng4
+          docker run -d --name test-container ${{ secrets.DOCKERHUB_USERNAME }}/nng4: ${{ github.sha }}
           sleep 20
           docker logs test-container
           curl http://localhost:3000/
