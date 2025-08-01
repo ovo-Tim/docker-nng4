@@ -55,7 +55,7 @@ jobs:
           docker run -d --name test-container ${{ secrets.DOCKERHUB_USERNAME }}/nng4
           sleep 20
           docker logs test-container
-          curl http://localhost:3000/
+          curl http://127.0.0.1:3000/
           sleep 5
           docker logs test-container
           docker stop test-container
