@@ -11,8 +11,14 @@ jobs:
   build-and-push:
     runs-on: ubuntu-latest
     env:
-      SKIP_PUSH: ${{ contains(github.event.head_commit.message, '[skip ci]') }}
+      SKIP_PUSH: ${{ contains(github.event.commits[0].message, '[skip ci]') }}
     steps:
+      - name: Debug info
+        run: |
+          echo "Push ${{ !env.SKIP_PUSH }}"
+          echo ${{ contains(github.event.commits[0].message, '[skip ci]') }}
+          echo ${{ github.event.commits[0].message }}
+
       - name: Checkout repository
         uses: actions/checkout@v4
 
@@ -50,7 +56,6 @@ jobs:
 
       - name: Test Docker container and output logs
         run: |
-          echo "Push ${{ !env.SKIP_PUSH }}"
           docker load -i /tmp/nng4.tar
           docker images
           docker run -d -p 3000:3000 --name test-container ${{ secrets.DOCKERHUB_USERNAME }}/nng4
