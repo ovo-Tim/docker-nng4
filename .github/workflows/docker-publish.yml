@@ -10,6 +10,8 @@ on:
 jobs:
   build-and-push:
     runs-on: ubuntu-latest
+    env:
+      SKIP_PUSH: ${{ contains(github.event.commits[0].message, '[skip-push]') }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -39,6 +41,16 @@ jobs:
         with:
           context: .
           file: ./Dockerfile
-          push: true
+          push: ${{ !env.SKIP_PUSH }}
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
+
+      - name: Test Docker container and output logs
+        run: |
+          docker run -d --name test-container ${{ secrets.DOCKERHUB_USERNAME }}/nng4
+          sleep 20
+          curl http://localhost:3000/
+          sleep 5
+          docker logs test-container
+          docker stop test-container
+          docker rm test-container
