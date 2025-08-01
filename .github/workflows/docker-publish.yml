@@ -44,6 +44,8 @@ jobs:
           push: ${{ !env.SKIP_PUSH }}
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=registry,ref=user/app:latest
+          cache-to: type=inline
 
       - name: Test Docker container and output logs
         run: |
