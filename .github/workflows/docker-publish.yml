@@ -50,6 +50,7 @@ jobs:
 
       - name: Test Docker container and output logs
         run: |
+          echo "Push ${{ !env.SKIP_PUSH }}"
           docker load -i /tmp/nng4.tar
           docker images
           docker run -d --name test-container ${{ secrets.DOCKERHUB_USERNAME }}/nng4

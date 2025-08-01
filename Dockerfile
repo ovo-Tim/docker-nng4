@@ -27,7 +27,8 @@ USER node
 
 RUN cd nng4 && lake update -R && lake exe cache get && lake build
 # pnpm just doesn't work
-RUN cd lean4game && npm i --production
+# --production doesn't work either
+RUN cd lean4game && npm i
 RUN cd lean4game && npm run build
 RUN npm cache clean --force
 
