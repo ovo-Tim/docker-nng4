@@ -11,7 +11,7 @@ jobs:
   build-and-push:
     runs-on: ubuntu-latest
     env:
-      SKIP_PUSH: ${{ contains(github.event.commits[0].message, '[skip-push]') }}
+      SKIP_PUSH: ${{ contains(github.event.head_commit.message, '[skip ci]') }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
