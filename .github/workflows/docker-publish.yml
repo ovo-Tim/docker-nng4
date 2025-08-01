@@ -11,11 +11,6 @@ jobs:
   build-and-push:
     runs-on: ubuntu-latest
     steps:
-      - name: Debug info
-        run: |
-          echo "Push ${{ !env.SKIP_PUSH }}"
-          echo ${{ !contains(github.event.commits[0].message, '[skip ci]') }}
-
       - name: Checkout repository
         uses: actions/checkout@v4
 
@@ -39,21 +34,32 @@ jobs:
             type=sha,prefix=,format=short
             type=raw,value=latest,enable={{is_default_branch}}
 
-      - name: Build and push Docker image
+      - name: Build Docker image
         uses: docker/build-push-action@v5
         with:
           context: .
           file: ./Dockerfile
-          push: ${{ !contains(github.event.commits[0].message, '[skip ci]') }}
+          # push: ${{ !contains(github.event.commits[0].message, '[skip ci]') }}  # Push later
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
           cache-from: type=registry,ref=${{ secrets.DOCKERHUB_USERNAME }}/nng4:latest
           cache-to: type=inline
-          outputs: type=docker,dest=/tmp/nng4.tar
+          load: true
+
+      - name: Push Docker image
+        if: ${{ !contains(github.event.commits[0].message, '[skip ci]') }}
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: ./Dockerfile
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=registry,ref=${{ secrets.DOCKERHUB_USERNAME }}/nng4:latest
+          cache-to: type=inline
+          push: true
 
       - name: Test Docker container and output logs
         run: |
-          docker load -i /tmp/nng4.tar
           docker images
           docker run -d -p 3000:3000 --name test-container ${{ secrets.DOCKERHUB_USERNAME }}/nng4
           sleep 20
