@@ -10,14 +10,11 @@ on:
 jobs:
   build-and-push:
     runs-on: ubuntu-latest
-    env:
-      SKIP_PUSH: ${{ contains(github.event.commits[0].message, '[skip ci]') }}
     steps:
       - name: Debug info
         run: |
           echo "Push ${{ !env.SKIP_PUSH }}"
-          echo ${{ contains(github.event.commits[0].message, '[skip ci]') }}
-          echo ${{ github.event.commits[0].message }}
+          echo ${{ !contains(github.event.commits[0].message, '[skip ci]') }}
 
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -47,7 +44,7 @@ jobs:
         with:
           context: .
           file: ./Dockerfile
-          push: ${{ !env.SKIP_PUSH }}
+          push: ${{ !contains(github.event.commits[0].message, '[skip ci]') }}
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
           cache-from: type=registry,ref=${{ secrets.DOCKERHUB_USERNAME }}/nng4:latest
