@@ -39,24 +39,11 @@ jobs:
         with:
           context: .
           file: ./Dockerfile
-          # push: ${{ !contains(github.event.commits[0].message, '[skip ci]') }}  # Push later
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
           cache-from: type=registry,ref=${{ secrets.DOCKERHUB_USERNAME }}/nng4:latest
           cache-to: type=inline
           load: true
-
-      - name: Push Docker image
-        if: ${{ !contains(github.event.commits[0].message, '[skip ci]') }}
-        uses: docker/build-push-action@v5
-        with:
-          context: .
-          file: ./Dockerfile
-          tags: ${{ steps.meta.outputs.tags }}
-          labels: ${{ steps.meta.outputs.labels }}
-          cache-from: type=registry,ref=${{ secrets.DOCKERHUB_USERNAME }}/nng4:latest
-          cache-to: type=inline
-          push: true
 
       - name: Test Docker container and output logs
         run: |
@@ -69,3 +56,15 @@ jobs:
           docker logs test-container
           docker stop test-container
           docker rm test-container
+
+      - name: Push Docker image
+        if: ${{ !contains(github.event.commits[0].message, '[skip-push]') }}
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: ./Dockerfile
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=registry,ref=${{ secrets.DOCKERHUB_USERNAME }}/nng4:latest
+          cache-to: type=inline
+          push: true
