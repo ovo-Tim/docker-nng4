@@ -35,11 +35,13 @@ RUN cd ~/nng4 && lake clean && cd ~/lean4game/server/ && lake clean
 
 FROM node:20-alpine
 
-USER node
-WORKDIR /home/node
-
 COPY --from=builder /home/node/nng4 /home/node/nng4
 COPY --from=builder /home/node/lean4game /home/node/lean4game
 
+RUN chown -R node:node /home/node/nng4 /home/node/lean4game
+
+USER node
+WORKDIR /home/node
+
 EXPOSE 3000
-CMD cd ~/lean4game && npm run start_client
+CMD ["sh", "-c", "cd lean4game && npm run start_client"]
