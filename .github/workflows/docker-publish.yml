@@ -14,11 +14,11 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Clean up CI
-        run: |
-          df -h
-          curl -s https://github.com/apache/flink/raw/02d30ace69dc18555a5085eccf70ee884e73a16e/tools/azure-pipelines/free_disk_space.sh | bash
-          df -h
+      - name: Free Disk Space (Ubuntu)
+        uses: jlumbroso/free-disk-space@main
+        with:
+          tool-cache: false
+          swap-storage: false
 
       - name: Set up QEMU
         if: ${{ !contains(github.event.commits[0].message, '[test]') }}
