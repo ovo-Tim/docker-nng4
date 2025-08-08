@@ -29,7 +29,9 @@ RUN cd nng4 && lake update -R && lake exe cache get && lake build
 # pnpm just doesn't work
 RUN cd lean4game && npm i --production
 RUN cd lean4game && npm run build
-RUN npm cache clean --force
+# clean up
+RUN npm cache clean --force && rm -rf ./.cache
+RUN cd nng4 && lake clean && cd ./lean4game/server/ && lake clean
 
 EXPOSE 3000
 CMD cd ~/lean4game && npm run start_client
