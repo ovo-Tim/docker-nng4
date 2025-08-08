@@ -1,4 +1,4 @@
-FROM node:20
+FROM node:20 AS builder
 
 SHELL ["/bin/bash", "-euxo", "pipefail", "-c"]
 
@@ -32,6 +32,14 @@ RUN cd lean4game && npm run build
 # clean up
 RUN npm cache clean --force && rm -rf ./.cache
 RUN cd ~/nng4 && lake clean && cd ~/lean4game/server/ && lake clean
+
+FROM node:20-alpine
+
+USER node
+WORKDIR /home/node
+
+COPY --from=builder /home/node/nng4 /home/node/nng4
+COPY --from=builder /home/node/lean4game /home/node/lean4game
 
 EXPOSE 3000
 CMD cd ~/lean4game && npm run start_client
