@@ -15,6 +15,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Set up QEMU
+        if: ${{ !contains(github.event.commits[0].message, '[test]') }}
         uses: docker/setup-qemu-action@v3
 
       - name: Set up Docker Buildx
@@ -37,8 +38,9 @@ jobs:
             type=sha,prefix=,format=short
             type=raw,value=latest,enable={{is_default_branch}}
 
-      - name: Build Docker image
+      - name: Build Multi-platform image
         uses: docker/build-push-action@v5
+        if: ${{ !contains(github.event.commits[0].message, '[test]') }}
         with:
           context: .
           file: ./Dockerfile
@@ -49,7 +51,20 @@ jobs:
           load: true
           platforms: linux/amd64,linux/amd64/v2,linux/amd64/v3,linux/arm64,linux/riscv64,linux/ppc64le,linux/s390x,linux/386,linux/mips64le,linux/mips64,linux/loong64,linux/arm/v7,linux/arm/v6
 
+      - name: Build test image
+        uses: docker/build-push-action@v5
+        if: ${{ contains(github.event.commits[0].message, '[test]') }}
+        with:
+          context: .
+          file: ./Dockerfile
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=registry,ref=${{ secrets.DOCKERHUB_USERNAME }}/nng4:latest
+          cache-to: type=inline
+          load: true
+
       - name: Test Docker container and output logs
+        if: ${{ contains(github.event.commits[0].message, '[test]') }}
         run: |
           docker images
           docker run -d -p 3000:3000 --name test-container ${{ secrets.DOCKERHUB_USERNAME }}/nng4
@@ -68,7 +83,7 @@ jobs:
           docker rm test-container
 
       - name: Push Docker image
-        if: ${{ !contains(github.event.commits[0].message, '[skip-push]') }}
+        if: ${{ !contains(github.event.commits[0].message, '[test]') }}
         uses: docker/build-push-action@v5
         with:
           context: .
