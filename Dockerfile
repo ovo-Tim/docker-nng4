@@ -44,4 +44,4 @@ USER node
 WORKDIR /home/node
 
 EXPOSE 3000
-CMD ["sh", "-c", "cd lean4game && npm run start_client"]
+CMD ["sh", "-c", "cd lean4game && (npm run start_server & npm run start_client)"]
