@@ -65,7 +65,7 @@ jobs:
 
       - name: Save Docker image as tar file
         run: |
-          docker save ovo-tim/nng4:latest -o nng4-images.tar
+          docker save ${{ secrets.DOCKERHUB_USERNAME }}/nng4 -o nng4-images.tar
 
       - name: Upload as artifact
         uses: actions/upload-artifact@v4
