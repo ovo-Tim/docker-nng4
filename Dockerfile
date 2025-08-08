@@ -31,7 +31,7 @@ RUN cd lean4game && npm i --production
 RUN cd lean4game && npm run build
 # clean up
 RUN npm cache clean --force && rm -rf ./.cache
-RUN cd nng4 && lake clean && cd ./lean4game/server/ && lake clean
+RUN cd ~/nng4 && lake clean && cd ~/lean4game/server/ && lake clean
 
 EXPOSE 3000
 CMD cd ~/lean4game && npm run start_client
