@@ -33,4 +33,4 @@ RUN cd nng4 && lake update -R && lake exe cache get && lake build && \
   npm cache clean --force && rm -rf ./.cache
 
 EXPOSE 3000
-CMD ["sh", "-c", "cd lean4game && (npm run start_server & npm run start_client)"]
+CMD ["sh", "-c", "cd lean4game && npm run start"]
