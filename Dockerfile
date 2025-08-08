@@ -16,6 +16,7 @@ ENV ELAN_HOME=/usr/local/elan \
 USER root
 
 RUN export LEAN_VERSION="$(cat nng4/lean-toolchain)" && \
+  echo $LEAN_VERSION > LEAN_VERSION.txt && \
   curl https://raw.githubusercontent.com/leanprover/elan/master/elan-init.sh -sSf | sh -s -- -y --no-modify-path --default-toolchain $LEAN_VERSION; \
     chmod -R a+w $ELAN_HOME; \
     elan --version; \
@@ -25,23 +26,12 @@ RUN export LEAN_VERSION="$(cat nng4/lean-toolchain)" && \
 
 USER node
 
-RUN cd nng4 && lake update -R && lake exe cache get && lake build
 # pnpm just doesn't work
-RUN cd lean4game && npm i --production
-RUN cd lean4game && npm run build
-# clean up
-RUN npm cache clean --force && rm -rf ./.cache
-RUN cd ~/nng4 && lake clean && cd ~/lean4game/server/ && lake clean
-
-FROM node:20-alpine
-
-COPY --from=builder /home/node/nng4 /home/node/nng4
-COPY --from=builder /home/node/lean4game /home/node/lean4game
-
-RUN chown -R node:node /home/node/nng4 /home/node/lean4game
-
-USER node
-WORKDIR /home/node
+RUN cd nng4 && lake update -R && lake exe cache get && lake build && lake clean && \
+  cd ~/lean4game && npm i --production && \
+  cd ~/lean4game && npm run build && \
+  npm cache clean --force && rm -rf ./.cache \
+  cd ~/nng4 && lake clean
 
 EXPOSE 3000
 CMD ["sh", "-c", "cd lean4game && (npm run start_server & npm run start_client)"]
