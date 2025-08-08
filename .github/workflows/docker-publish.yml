@@ -72,7 +72,7 @@ jobs:
           docker logs test-container
           response=$(curl -s http://127.0.0.1:3000/data/g/local/nng4/game.json)
           if [ -z "$response" ]; then
-              echo "Error: curl returned empty response" > &2
+              echo "Error: curl returned empty response" >&2
               docker logs test-container
               exit 1
           else
