@@ -63,6 +63,16 @@ jobs:
           cache-to: type=inline
           load: true
 
+      - name: Save Docker image as tar file
+        run: |
+          docker save ovo-tim/nng4:latest -o nng4-images.tar
+
+      - name: Upload as artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: docker-image-tar
+          path: nng4-images.tar
+
       - name: Test Docker container and output logs
         if: ${{ contains(github.event.commits[0].message, '[test]') }}
         run: |
