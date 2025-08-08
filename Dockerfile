@@ -16,7 +16,6 @@ ENV ELAN_HOME=/usr/local/elan \
 USER root
 
 RUN export LEAN_VERSION="$(cat nng4/lean-toolchain)" && \
-  echo $LEAN_VERSION > LEAN_VERSION.txt && \
   curl https://raw.githubusercontent.com/leanprover/elan/master/elan-init.sh -sSf | sh -s -- -y --no-modify-path --default-toolchain $LEAN_VERSION; \
     chmod -R a+w $ELAN_HOME; \
     elan --version; \
