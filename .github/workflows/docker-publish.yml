@@ -44,7 +44,7 @@ jobs:
             type=sha,prefix=,format=short
             type=raw,value=latest,enable={{is_default_branch}}
 
-      - name: Build Multi-platform image
+      - name: Build Multi-platform image and push to Docker Hub
         uses: docker/build-push-action@v5
         if: ${{ !contains(github.event.commits[0].message, '[test]') }}
         with:
@@ -54,7 +54,8 @@ jobs:
           labels: ${{ steps.meta.outputs.labels }}
           cache-from: type=registry,ref=${{ secrets.DOCKERHUB_USERNAME }}/nng4:latest
           cache-to: type=inline
-          platforms: linux/amd64,linux/amd64/v2,linux/amd64/v3,linux/arm64,linux/riscv64,linux/ppc64le,linux/s390x,linux/386,linux/mips64le,linux/mips64,linux/loong64,linux/arm/v7,linux/arm/v6
+          push: true
+          platforms: linux/amd64, linux/arm/v6, linux/arm/v7, linux/arm64
 
       - name: Build test image
         uses: docker/build-push-action@v5
@@ -99,15 +100,3 @@ jobs:
           docker logs test-container
           docker stop test-container
           docker rm test-container
-
-      - name: Push Docker image
-        if: ${{ !contains(github.event.commits[0].message, '[test]') }}
-        uses: docker/build-push-action@v5
-        with:
-          context: .
-          file: ./Dockerfile
-          tags: ${{ steps.meta.outputs.tags }}
-          labels: ${{ steps.meta.outputs.labels }}
-          cache-from: type=registry,ref=${{ secrets.DOCKERHUB_USERNAME }}/nng4:latest
-          cache-to: type=inline
-          push: true
