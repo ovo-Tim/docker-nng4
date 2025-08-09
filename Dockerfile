@@ -29,7 +29,7 @@ USER node
 RUN cd nng4 && lake update -R && lake exe cache get && lake build && \
   cd ~/lean4game && npm i && \
   cd ~/lean4game && npm run build && \
-  npm cache clean --force && rm -rf ./.cache
+  npm cache clean --force && rm -rf ~/.cache
 
 EXPOSE 3000
 CMD ["sh", "-c", "cd lean4game && npm run start"]
