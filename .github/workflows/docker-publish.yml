@@ -23,6 +23,8 @@ jobs:
       - name: Set up QEMU
         if: ${{ !contains(github.event.commits[0].message, '[test]') }}
         uses: docker/setup-qemu-action@v3
+        with:
+          platforms: arm64
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
@@ -55,7 +57,7 @@ jobs:
           cache-from: type=registry,ref=${{ secrets.DOCKERHUB_USERNAME }}/nng4:latest
           cache-to: type=inline
           push: true
-          platforms: linux/amd64, linux/arm/v6, linux/arm/v7, linux/arm64
+          platforms: linux/amd64, linux/arm64/v8
 
       - name: Build test image
         uses: docker/build-push-action@v5
